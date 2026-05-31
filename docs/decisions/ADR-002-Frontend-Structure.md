@@ -1,0 +1,5 @@
+- React
+- TypeScript
+- Feature-oriented organization
+- Pages/components separation
+- Services layer for API communication
