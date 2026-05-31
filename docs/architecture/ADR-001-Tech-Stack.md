@@ -1,0 +1,7 @@
+- React
+- TypeScript
+- Vite
+- ASP>NET Core
+- C#
+- SQLite
+- JWT Authentication
