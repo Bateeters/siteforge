@@ -1,6 +1,6 @@
 function RegisterPage() {
     return (
-        <p>Register Page</p>
+        <h1>Register Page</h1>
     );
 }
 

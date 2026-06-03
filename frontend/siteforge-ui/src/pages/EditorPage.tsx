@@ -1,6 +1,6 @@
 function EditorPage() {
     return (
-        <p>Editor Page</p>
+        <h1>Editor Page</h1>
     );
 }
 
