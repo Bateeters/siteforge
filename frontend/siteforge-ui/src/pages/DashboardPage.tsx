@@ -35,9 +35,17 @@ function DashboardPage() {
     };
 
     const handleCreateWebsite = (e: React.SubmitEvent<HTMLFormElement>) => {
+        const isValidName = websiteData.name.trim() !== "";
         e.preventDefault();
-        console.log(`Website Created: ${websiteData.name}`);
-        setShowCreateWebsiteForm(false);
+
+        if (!isValidName) {
+            console.log("Website name is required and must contain only letters and spaces.");
+        }
+        else
+        {
+            console.log(`Website Created: ${websiteData.name}`);
+            setShowCreateWebsiteForm(false);
+        }
         setWebsiteData({ name: "" });
     };
 
