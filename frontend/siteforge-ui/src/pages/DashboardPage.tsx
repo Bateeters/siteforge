@@ -1,29 +1,19 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+type Website = {
+    id: number;
+    name: string;
+    lastUpdated: string;
+}
+
 function DashboardPage() {
     const [showCreateWebsiteForm, setShowCreateWebsiteForm] = useState(false);
     const [websiteData, setWebsiteData] = useState({
         name: ""
     });
 
-    const websites = [
-        { 
-            id: 1,
-            name: "Porfolio Website",
-            lastUpdated: "2026-05-15"
-        },
-        {
-            id: 2,
-            name: "Food Chain Rumble",
-            lastUpdated: "2026-04-11"
-        },
-        {
-            id: 3,
-            name: "Test Site",
-            lastUpdated: "2026-03-20"
-        }
-    ];
+    const [websites, setWebsites] = useState<Website[]>([]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -44,6 +34,14 @@ function DashboardPage() {
         else
         {
             console.log(`Website Created: ${websiteData.name}`);
+            setWebsites(prevWebsites => [
+                ...prevWebsites,
+                {
+                    id: prevWebsites.length, // TODO: Replace with actual ID from backend
+                    name: websiteData.name,
+                    lastUpdated: new Date().toISOString().split('T')[0]
+                }
+            ])
             setShowCreateWebsiteForm(false);
         }
         setWebsiteData({ name: "" });
