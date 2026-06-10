@@ -1,33 +1,36 @@
 import { useState } from "react";
 
-type EditorState =
-    | "settings"
-    | "properties"
-    | "components";
+type EditorPanelProps = {
+    selectedItem:
+        | null
+        | "row"
+        | "component"
+        | "emptyColumn";
+    setSelectedItem: React.Dispatch<React.SetStateAction<
+        | null
+        | "row"
+        | "component"
+        | "emptyColumn"
+        >>;
+}
 
 type SettingsTab =
     | "site"
     | "page";
 
-function EditorPanel() {
-    const [editorState, setEditorState] = useState<EditorState>("settings");
+function EditorPanel({ selectedItem, setSelectedItem }: EditorPanelProps) {
     const [settingsTab, setSettingsTab] = useState<SettingsTab>("page");
     const [showTabProps, setShowTabProps] = useState(false);
 
     return (
         <div>
-            <h2>Editor Side Panel</h2>
-            <button onClick={() => setEditorState("settings")} disabled={editorState === "settings"}>Settings</button>
-            <button onClick={() => setEditorState("properties")} disabled={editorState === "properties"}>Properties</button>
-            <button onClick={() => setEditorState("components")} disabled={editorState === "components"}>Components</button>
-
-            <h3>{editorState.charAt(0).toUpperCase() + editorState.slice(1)} Panel</h3>
+            <button className="w-100 p-1 pb-2 btn btn-primary rounded-0" onClick={() => setSelectedItem(null)}>Page Settings</button>
 
             {/* ------------------- Settings Content -------------------- */}
-            {editorState === "settings" && (
-                <>
-                    <button onClick={() => setSettingsTab("site")} disabled={settingsTab === "site"}>Site Settings</button>
+            {selectedItem === null && (
+                <div className="p-3">
                     <button onClick={() => setSettingsTab("page")} disabled={settingsTab === "page"}>Page Settings</button>
+                    <button onClick={() => setSettingsTab("site")} disabled={settingsTab === "site"}>Site Settings</button>
                     {settingsTab === "page" && (
                         <>
                             <h4>Page Settings</h4>
@@ -74,20 +77,28 @@ function EditorPanel() {
                             </ul>
                         </>
                     )}
-                </>
+                </div>
             )}
 
-            {/* ------------------- Properties Content -------------------- */}
-            {editorState === "properties" && (
-                <>
-                    <h4>Properties</h4>
-                    <input type="text" placeholder="Property Name" />
-                </>
+            {/* ------------------- Row Properties Content -------------------- */}
+            {selectedItem === "row" && (
+                <div className="p-3">
+                    <h4>Row Properties</h4>
+                    <input type="text" placeholder="Number of Columns" />
+                </div>
+            )}
+
+            {/* ------------------- Component Properties Content -------------------- */}
+            {selectedItem === "component" && (
+                <div className="p-3">
+                    <h4>Component Properties</h4>
+                    <input type="text" placeholder="Text Content" />
+                </div>
             )}
 
             {/* ------------------- Components Content -------------------- */}
-            {editorState === "components" && (
-                <>
+            {selectedItem === "emptyColumn" && (
+                <div className="p-3">
                     <h4>Components</h4>
                     <div>
                         <ul>
@@ -96,7 +107,7 @@ function EditorPanel() {
                             <li>Component 3</li>
                         </ul>
                     </div>
-                </>
+                </div>
             )}
         </div>
     )
