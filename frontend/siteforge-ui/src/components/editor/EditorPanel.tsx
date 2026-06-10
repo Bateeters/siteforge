@@ -1,17 +1,9 @@
 import { useState } from "react";
+import type { SelectedItem } from "../../types/editor";
 
 type EditorPanelProps = {
-    selectedItem:
-        | null
-        | "row"
-        | "component"
-        | "emptyColumn";
-    setSelectedItem: React.Dispatch<React.SetStateAction<
-        | null
-        | "row"
-        | "component"
-        | "emptyColumn"
-        >>;
+    selectedItem: SelectedItem;
+    setSelectedItem: React.Dispatch<React.SetStateAction<SelectedItem>>;
 }
 
 type SettingsTab =

@@ -1,11 +1,6 @@
 import { useState } from "react";
 import EditorPanel from "../components/editor/EditorPanel";
-
-export type SelectedItem =
-    | null
-    | "row"
-    | "component"
-    | "emptyColumn";
+import type { SelectedItem } from "../types/editor";
 
 
 function EditorPage() { 
