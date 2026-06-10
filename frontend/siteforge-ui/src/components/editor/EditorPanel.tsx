@@ -10,8 +10,8 @@ type SettingsTab =
     | "page";
 
 function EditorPanel() {
-    const [editorState, setEditorState] = useState("settings");
-    const [settingsTab, setSettingsTab] = useState("page");
+    const [editorState, setEditorState] = useState<EditorState>("settings");
+    const [settingsTab, setSettingsTab] = useState<SettingsTab>("page");
     const [showTabProps, setShowTabProps] = useState(false);
 
     return (
