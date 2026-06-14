@@ -120,7 +120,7 @@ function EditorPanel({ selectedItem, setSelectedItem, rowList, setRowList }: Edi
                                                 type="radio"
                                                 name="selectColumnCount"
                                                 value="1"
-                                                checked
+                                                defaultChecked
                                                 onChange={() => setRowColumnCount(1)}/>
                                                 <label>1</label>
                                         </div>

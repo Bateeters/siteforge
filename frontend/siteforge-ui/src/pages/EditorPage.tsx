@@ -3,10 +3,15 @@ import EditorPanel from "../components/editor/EditorPanel";
 import type { SelectedItem } from "../types/editor";
 import type { Row } from "../types/row";
 
-
 function EditorPage() { 
     const [selectedItem, setSelectedItem] = useState<SelectedItem>(null)
     const [rowList, setRowList] = useState<Row[]>([])
+
+    function getColumnClass(columns: number) {
+        if (columns === 1) return "col-12";
+        if (columns === 2) return "col-6";
+        return "col-4";
+    }
 
     return (
         <>
@@ -27,10 +32,14 @@ function EditorPage() {
                         <button onClick={() => setSelectedItem("emptyColumn")}>Empty Column</button>
 
                         {rowList.map((row) => (
-                            <div key={row.id} className="row" onClick={() => setSelectedItem("row")}>
-                                <h3 className="col-12">{row.name}</h3>
-                                {Array.from({length: row.columns}, (_, i) => (
-                                    <div key={i} className="col-3" style={{backgroundColor: "yellow"}}>column</div>
+                            <div className="row" key={row.id}>
+                                {Array.from({ length: row.columns }, (_, i) => (
+                                    <div 
+                                    key={i}
+                                    className={`d-flex ${getColumnClass(row.columns)} justify-content-center align-items-center`} 
+                                    style={{backgroundColor: "yellow"}}>
+                                        <button className="btn btn-secondary m-5">+</button>
+                                    </div>
                                 ))}
                             </div>
                         ))}
