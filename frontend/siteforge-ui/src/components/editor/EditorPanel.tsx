@@ -1,18 +1,65 @@
 import { useState } from "react";
 import type { SelectedItem } from "../../types/editor";
+import type { Row } from "../../types/row";
 
 type EditorPanelProps = {
     selectedItem: SelectedItem;
     setSelectedItem: React.Dispatch<React.SetStateAction<SelectedItem>>;
+    rowList: Row[];
+    setRowList: React.Dispatch<React.SetStateAction<Row[]>>;
 }
 
 type SettingsTab =
     | "site"
     | "page";
 
-function EditorPanel({ selectedItem, setSelectedItem }: EditorPanelProps) {
+type ColumnCount =
+    | 1
+    | 2
+    | 3;
+
+    
+function EditorPanel({ selectedItem, setSelectedItem, rowList, setRowList }: EditorPanelProps) {
     const [settingsTab, setSettingsTab] = useState<SettingsTab>("page");
     const [showTabProps, setShowTabProps] = useState(false);
+    const [showCreateRowForm, setShowCreateRowForm] = useState(false)
+    const [rowColumnCount, setRowColumnCount] = useState<ColumnCount>(1);
+
+    const [rowData, setRowData] = useState({
+        name: ""
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+
+        setRowData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    const handleCreateRow = (e: React.SubmitEvent<HTMLFormElement>) => {
+        const isValidName = rowData.name.trim() !== "";
+        e.preventDefault();
+
+        if (!isValidName) {
+            console.log("Row name is required and cannot be blank.");
+        }
+        else
+        {
+            console.log(`Row Created: ${rowData.name}`);
+            setRowList(prevRows => [
+                ...prevRows,
+                {
+                    id: prevRows.length, // TODO: Replace with actual ID from backend
+                    name: rowData.name,
+                    columns: rowColumnCount
+                }
+            ])
+            setShowCreateRowForm(false);
+        }
+        setRowData({ name: "" });
+    };
 
     return (
         <div>
@@ -52,10 +99,52 @@ function EditorPanel({ selectedItem, setSelectedItem }: EditorPanelProps) {
                             )}
                             <h5>Row List</h5>
                             <ul>
-                                <li>Row 1</li>
-                                <li>Row 2</li>
-                                <li>Row 3</li>
+                                {rowList.map((row) => (
+                                    <li key={row.id} onClick={() => setSelectedItem("row")}>{row.name}</li>
+                                ))}
                             </ul>
+                            <button type="button" onClick={() => setShowCreateRowForm(true)}>Add Row</button>
+                            {showCreateRowForm ? 
+                                <div>
+                                    <form onSubmit={handleCreateRow}>
+                                        <label>Row Name:</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Row Name"
+                                            name="name"
+                                            value={rowData.name}
+                                            onChange={handleChange}/>
+                                        <label>Columns:</label>
+                                        <div>
+                                            <input
+                                                type="radio"
+                                                name="selectColumnCount"
+                                                value="1"
+                                                checked
+                                                onChange={() => setRowColumnCount(1)}/>
+                                                <label>1</label>
+                                        </div>
+                                        <div>
+                                            <input
+                                                type="radio"
+                                                name="selectColumnCount"
+                                                value="2"
+                                                onChange={() => setRowColumnCount(2)}/>
+                                                <label>2</label>
+                                        </div>
+                                        <div>
+                                            <input
+                                                type="radio"
+                                                name="selectColumnCount"
+                                                value="3"
+                                                onChange={() => setRowColumnCount(3)}/>
+                                                <label>3</label>
+                                        </div>
+                                        <button type="submit">Create</button>
+                                        <button type="button" onClick={() => setShowCreateRowForm(false)}>Cancel</button>
+                                    </form>
+                                </div> 
+                            : null}
                         </>
                     )}
                     {settingsTab === "site" && (
@@ -91,7 +180,7 @@ function EditorPanel({ selectedItem, setSelectedItem }: EditorPanelProps) {
             {/* ------------------- Components Content -------------------- */}
             {selectedItem === "emptyColumn" && (
                 <div className="p-3">
-                    <h4>Components</h4>
+                    <h4>Add Component</h4>
                     <div>
                         <ul>
                             <li>Component 1</li>

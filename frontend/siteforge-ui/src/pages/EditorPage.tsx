@@ -1,10 +1,13 @@
 import { useState } from "react";
 import EditorPanel from "../components/editor/EditorPanel";
 import type { SelectedItem } from "../types/editor";
+import type { Row } from "../types/row";
 
 
 function EditorPage() { 
     const [selectedItem, setSelectedItem] = useState<SelectedItem>(null)
+    const [rowList, setRowList] = useState<Row[]>([])
+
     return (
         <>
             <div className="container-fluid">
@@ -22,11 +25,22 @@ function EditorPage() {
                         <button onClick={() => setSelectedItem("row")}>Row</button>
                         <button onClick={() => setSelectedItem("component")}>Component</button>
                         <button onClick={() => setSelectedItem("emptyColumn")}>Empty Column</button>
+
+                        {rowList.map((row) => (
+                            <div key={row.id} className="row" onClick={() => setSelectedItem("row")}>
+                                <h3 className="col-12">{row.name}</h3>
+                                {Array.from({length: row.columns}, (_, i) => (
+                                    <div key={i} className="col-3" style={{backgroundColor: "yellow"}}>column</div>
+                                ))}
+                            </div>
+                        ))}
                     </div>
-                    <div className="col-lg-3 p-0" style={{ backgroundColor: "whitesmoke", padding: "10px" }}>
+                    <div className="col-lg-3 p-0" style={{ backgroundColor: "whitesmoke" }}>
                         <EditorPanel 
                             selectedItem={selectedItem}
                             setSelectedItem={setSelectedItem}
+                            rowList={rowList}
+                            setRowList={setRowList}
                         />
                     </div>
                 </div>
