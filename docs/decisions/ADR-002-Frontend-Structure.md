@@ -18,6 +18,7 @@ Several decisions were needed regarding routing, page organization, component or
 
 ## Decision
 
+The frontend architecture adops a hierarchical layout model: Page -> Row -> Column -> Component.
 The frontend will use the following structure and architectural principles:
 
 ### Technology
@@ -89,6 +90,13 @@ Examples:
 * `/editor/:websiteId`
 
 Website names may change over time, while identifiers remain stable.
+
+### Layout System (Row -> Column -> Component)
+* Rows represent horizontal sections
+* Each row contains N columns
+* Columns are now structural entities (not just numbers)
+* Layout must support dynamic column counts (1-3 initially)
+* System is intentionally simple first, expandable later
 
 ## Consequences
 

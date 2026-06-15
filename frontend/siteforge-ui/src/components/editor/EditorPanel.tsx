@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { SelectedItem } from "../../types/editor";
+import type { SelectedItem } from "../../types/selected";
 import type { Row } from "../../types/row";
 
 type EditorPanelProps = {
@@ -7,22 +7,21 @@ type EditorPanelProps = {
     setSelectedItem: React.Dispatch<React.SetStateAction<SelectedItem>>;
     rowList: Row[];
     setRowList: React.Dispatch<React.SetStateAction<Row[]>>;
-}
+};
 
-type SettingsTab =
-    | "site"
-    | "page";
+type SettingsTab = "site" | "page";
 
-type ColumnCount =
-    | 1
-    | 2
-    | 3;
-
+type ColumnCount = 1 | 2 | 3;
     
-function EditorPanel({ selectedItem, setSelectedItem, rowList, setRowList }: EditorPanelProps) {
+function EditorPanel({
+    selectedItem,
+    setSelectedItem,
+    rowList,
+    setRowList
+}: EditorPanelProps) {
     const [settingsTab, setSettingsTab] = useState<SettingsTab>("page");
     const [showTabProps, setShowTabProps] = useState(false);
-    const [showCreateRowForm, setShowCreateRowForm] = useState(false)
+    const [showCreateRowForm, setShowCreateRowForm] = useState(false);
     const [rowColumnCount, setRowColumnCount] = useState<ColumnCount>(1);
 
     const [rowData, setRowData] = useState({
@@ -32,123 +31,132 @@ function EditorPanel({ selectedItem, setSelectedItem, rowList, setRowList }: Edi
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
 
-        setRowData((prevData) => ({
-            ...prevData,
-            [name]: value,
+        setRowData(prev => ({
+            ...prev,
+            [name]: value
         }));
     };
 
     const handleCreateRow = (e: React.SubmitEvent<HTMLFormElement>) => {
-        const isValidName = rowData.name.trim() !== "";
         e.preventDefault();
 
-        if (!isValidName) {
-            console.log("Row name is required and cannot be blank.");
+        if (rowData.name.trim() === "") {
+            console.log("Row name required");
+            return;
         }
-        else
-        {
-            console.log(`Row Created: ${rowData.name}`);
-            setRowList(prevRows => [
-                ...prevRows,
-                {
-                    id: prevRows.length, // TODO: Replace with actual ID from backend
-                    name: rowData.name,
-                    columns: Array.from({ length: rowColumnCount }, (_, i) => ({
-                        id: i
-                    }))
-                }
-            ])
-            setShowCreateRowForm(false);
-        }
+
+        setRowList(prev => [
+            ...prev,
+            {
+            id: prev.length,
+                name: rowData.name,
+                columns: Array.from({ length: rowColumnCount }, (_, i) => ({
+                    id: i
+                }))
+            }
+        ]);
+
         setRowData({ name: "" });
+        setShowCreateRowForm(false);
     };
 
     return (
         <div>
-            <button className="w-100 p-1 pb-2 btn btn-primary rounded-0" onClick={() => setSelectedItem(null)}>Page Settings</button>
+            <button
+                className="w-100 p-1 pb-2 btn btn-primary rounded-0"
+                onClick={() => setSelectedItem({type:"page"})}
+            >
+                Page Settings
+            </button>
 
-            {/* ------------------- Settings Content -------------------- */}
-            {selectedItem === null && (
+            {/* ================= PAGE / SITE ================= */}
+            {selectedItem?.type === "page" && (
                 <div className="p-3">
-                    <button onClick={() => setSettingsTab("page")} disabled={settingsTab === "page"}>Page Settings</button>
-                    <button onClick={() => setSettingsTab("site")} disabled={settingsTab === "site"}>Site Settings</button>
+                    <button onClick={() => setSettingsTab("page")} 
+                        disabled={settingsTab === "page"}>
+                        Page Settings
+                    </button>
+
+                    <button onClick={() => setSettingsTab("site")}
+                        disabled={settingsTab === "site"}>
+                        Site Settings
+                    </button>
+
                     {settingsTab === "page" && (
                         <>
                             <h4>Page Settings</h4>
-                            {showTabProps ? (
-                                <button onClick={() => setShowTabProps(false)}>
-                                    Close {settingsTab.charAt(0).toUpperCase() + settingsTab.slice(1)} Properties
+
+                            <button
+                                onClick={() => setShowTabProps(prev => !prev)}
+                            >
+                                {showTabProps
+                                    ? "Close Page Properties"
+                                    : "Edit Page Properties"}
                                 </button>
-                            ) : (
-                                <button onClick={() => setShowTabProps(true)}>
-                                    Edit {settingsTab.charAt(0).toUpperCase() + settingsTab.slice(1)} Properties
-                                </button>
-                            ) }
                             
                             {showTabProps && (
                                 <>
-                                    <label>Page Title:</label>
                                     <input type="text" placeholder="Page Title" />
-                                    <label>Meta tag Description:</label>
                                     <input type="text" placeholder="Meta tag Description" />
-                                    <label>Meta tag keywords:</label>
                                     <input type="text" placeholder="Meta tag keywords" />
-                                    <label>Slug:</label>
                                     <input type="text" placeholder="Slug" />
-                                    <label>SEO:</label>
                                     <input type="text" placeholder="SEO" />
                                 </>
                             )}
-                            <h5>Row List</h5>
+
+                            <h5>Rows</h5>
+
                             <ul>
-                                {rowList.map((row) => (
-                                    <li key={row.id} onClick={() => setSelectedItem("row")}>{row.name}</li>
+                                {rowList.map(row => (
+                                    <li 
+                                        key={row.id}
+                                        onClick={() => setSelectedItem({ type: "row", rowId: row.id })}
+                                    >
+                                        {row.name}
+                                    </li>
                                 ))}
                             </ul>
-                            <button type="button" onClick={() => setShowCreateRowForm(true)}>Add Row</button>
-                            {showCreateRowForm ? 
-                                <div>
-                                    <form onSubmit={handleCreateRow}>
-                                        <label>Row Name:</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Row Name"
-                                            name="name"
-                                            value={rowData.name}
-                                            onChange={handleChange}/>
-                                        <label>Columns:</label>
-                                        <div>
-                                            <input
-                                                type="radio"
-                                                name="selectColumnCount"
-                                                value="1"
-                                                defaultChecked
-                                                onChange={() => setRowColumnCount(1)}/>
-                                                <label>1</label>
-                                        </div>
-                                        <div>
-                                            <input
-                                                type="radio"
-                                                name="selectColumnCount"
-                                                value="2"
-                                                onChange={() => setRowColumnCount(2)}/>
-                                                <label>2</label>
-                                        </div>
-                                        <div>
-                                            <input
-                                                type="radio"
-                                                name="selectColumnCount"
-                                                value="3"
-                                                onChange={() => setRowColumnCount(3)}/>
-                                                <label>3</label>
-                                        </div>
-                                        <button type="submit">Create</button>
-                                        <button type="button" onClick={() => setShowCreateRowForm(false)}>Cancel</button>
-                                    </form>
-                                </div> 
-                            : null}
+
+                            <button onClick={() => setShowCreateRowForm(true)}>
+                                Add Row
+                            </button>
+
+                            {showCreateRowForm && (
+                                <form onSubmit={handleCreateRow}>
+                                    <input
+                                        name="name"
+                                        value={rowData.name}
+                                        onChange={handleChange}
+                                        placeholder="Row Name"
+                                    />
+
+                                    <label>Columns</label>
+
+                                    <input
+                                        type="radio"
+                                        checked={rowColumnCount === 1}
+                                        onChange={() => setRowColumnCount(1)}
+                                    /> 1
+
+                                    <input
+                                        type="radio"
+                                        checked={rowColumnCount === 2}
+                                        onChange={() => setRowColumnCount(2)}
+                                    /> 2
+
+                                    <input
+                                        type="radio"
+                                        checked={rowColumnCount === 3}
+                                        onChange={() => setRowColumnCount(3)}
+                                    /> 3
+
+                                    <button type="submit">Create</button>
+                                    <button type="button" onClick={() => setShowCreateRowForm(false)}>Cancel</button>
+                                </form>
+                            )}
                         </>
                     )}
+
                     {settingsTab === "site" && (
                         <>
                             <h4>Site Settings</h4>
@@ -163,37 +171,34 @@ function EditorPanel({ selectedItem, setSelectedItem, rowList, setRowList }: Edi
                 </div>
             )}
 
-            {/* ------------------- Row Properties Content -------------------- */}
-            {selectedItem === "row" && (
+            {/* ================= ROW ================= */}
+            {selectedItem?.type === "row" && (
                 <div className="p-3">
                     <h4>Row Properties</h4>
-                    <input type="text" placeholder="Number of Columns" />
+                    <p>Row ID: {selectedItem.rowId}</p>
                 </div>
             )}
 
-            {/* ------------------- Component Properties Content -------------------- */}
-            {selectedItem === "component" && (
+            {/* ================= COLUMN ================= */}
+            {selectedItem?.type === "column" && (
+                <div className="p-3">
+                    <h4>Column Properties</h4>
+                    <p>Row ID: {selectedItem.rowId}</p>
+                    <p>Column ID: {selectedItem.columnId}</p>
+                </div>
+            )}
+
+            {/* ================= COMPONENT ================= */}
+            {selectedItem?.type === "component" && (
                 <div className="p-3">
                     <h4>Component Properties</h4>
-                    <input type="text" placeholder="Text Content" />
-                </div>
-            )}
-
-            {/* ------------------- Components Content -------------------- */}
-            {selectedItem === "emptyColumn" && (
-                <div className="p-3">
-                    <h4>Add Component</h4>
-                    <div>
-                        <ul>
-                            <li>Component 1</li>
-                            <li>Component 2</li>
-                            <li>Component 3</li>
-                        </ul>
-                    </div>
+                    <p>Row ID: {selectedItem.rowId}</p>
+                    <p>Column ID: {selectedItem.columnId}</p>
+                    <p>Component ID: {selectedItem.componentId}</p>
                 </div>
             )}
         </div>
-    )
+    );
 }
 
 export default EditorPanel;

@@ -1,51 +1,73 @@
 import { useState } from "react";
 import EditorPanel from "../components/editor/EditorPanel";
-import type { SelectedItem } from "../types/editor";
+import type { SelectedItem } from "../types/selected";
 import type { Row } from "../types/row";
+import RowView from "../components/editor/RowView";
 
-function EditorPage() { 
-    const [selectedItem, setSelectedItem] = useState<SelectedItem>(null)
-    const [rowList, setRowList] = useState<Row[]>([])
-
-    function getColumnClass(columns: number) {
-        if (columns === 1) return "col-12";
-        if (columns === 2) return "col-6";
-        return "col-4";
-    }
+function EditorPage() {
+    const [selectedItem, setSelectedItem] = useState<SelectedItem>(null);
+    const [rowList, setRowList] = useState<Row[]>([]);
 
     return (
         <>
+            {/* Top Toolbar */}
             <div className="container-fluid">
                 <div className="row">
-                    <div className="col-12" style={{ backgroundColor: "#d4d1d1", padding: "10px" }}>
+                    <div
+                        className="col-12"
+                        style={{
+                            backgroundColor: "#d4d1d1",
+                            padding: "10px"
+                        }}
+                    >
                         <p>Top Toolbar</p>
                     </div>
                 </div>
             </div>
+
+            {/* Main Layout */}
             <div className="container-fluid">
                 <div className="row">
-                    <div className="col-lg-9" style={{ backgroundColor: "red"}}>
+                    {/* Content Area */}
+                    <div
+                        className="col-lg-9"
+                        style={{ backgroundColor: "red" }}
+                    >
                         <p>Content Area</p>
                         <h1>Website Title</h1>
-                        <button onClick={() => setSelectedItem("row")}>Row</button>
-                        <button onClick={() => setSelectedItem("component")}>Component</button>
-                        <button onClick={() => setSelectedItem("emptyColumn")}>Empty Column</button>
 
+                        <button onClick={() => setSelectedItem({ type: "page" })}>
+                            Page
+                        </button>
+
+                        <button onClick={() => setSelectedItem({ type: "row", rowId: 0 })}>
+                            Row
+                        </button>
+
+                        <button onClick={() => setSelectedItem({ type: "column", rowId: 0, columnId: 0 })}>
+                            Column
+                        </button>
+
+                        <button onClick={() => setSelectedItem({ type: "component", rowId: 0, columnId: 0, componentId: 0 })}>
+                            Component
+                        </button>
+
+                        {/* ROW RENDER */}
                         {rowList.map((row) => (
-                            <div className="row" key={row.id}>
-                                {Array.from({ length: row.columns }, (_, i) => (
-                                    <div 
-                                    key={i}
-                                    className={`d-flex ${getColumnClass(row.columns)} justify-content-center align-items-center`} 
-                                    style={{backgroundColor: "yellow"}}>
-                                        <button className="btn btn-secondary m-5">+</button>
-                                    </div>
-                                ))}
-                            </div>
+                            <RowView
+                                key={row.id}
+                                row={row}
+                                setSelectedItem={setSelectedItem}
+                            />
                         ))}
                     </div>
-                    <div className="col-lg-3 p-0" style={{ backgroundColor: "whitesmoke" }}>
-                        <EditorPanel 
+
+                    {/* Editor Panel */}
+                    <div
+                        className="col-lg-3 p-0"
+                        style={{ backgroundColor: "whitesmoke" }}
+                    >
+                        <EditorPanel
                             selectedItem={selectedItem}
                             setSelectedItem={setSelectedItem}
                             rowList={rowList}
