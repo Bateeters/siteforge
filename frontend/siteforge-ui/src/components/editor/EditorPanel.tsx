@@ -53,7 +53,9 @@ function EditorPanel({ selectedItem, setSelectedItem, rowList, setRowList }: Edi
                 {
                     id: prevRows.length, // TODO: Replace with actual ID from backend
                     name: rowData.name,
-                    columns: rowColumnCount
+                    columns: Array.from({ length: rowColumnCount }, (_, i) => ({
+                        id: i
+                    }))
                 }
             ])
             setShowCreateRowForm(false);
