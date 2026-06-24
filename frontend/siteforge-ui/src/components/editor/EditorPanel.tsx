@@ -52,7 +52,7 @@ function EditorPanel({
                 name: rowData.name,
                 columns: Array.from({ length: rowColumnCount }, (_, i) => ({
                     id: i,
-                    content: `string ${i}`
+                    component: null
                 }))
             }
         ]);
