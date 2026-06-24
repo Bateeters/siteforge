@@ -19,7 +19,7 @@ function RowView({ row, setSelectedItem }: Props) {
                 <div
                     key={col.id}
                     className={`d-flex ${getColumnClass(row.columns.length)} justify-content-center align-items-center`}
-                    style={{ backgroundColor: "yellow", minHeight: "80px" }}
+                    style={{ backgroundColor: "yellow", minHeight: "80px", border: "1px solid gray" }}
                     onClick={() => 
                         setSelectedItem({
                             type: "column",

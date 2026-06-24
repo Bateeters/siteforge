@@ -51,7 +51,8 @@ function EditorPanel({
             id: prev.length,
                 name: rowData.name,
                 columns: Array.from({ length: rowColumnCount }, (_, i) => ({
-                    id: i
+                    id: i,
+                    content: `string ${i}`
                 }))
             }
         ]);
@@ -61,7 +62,7 @@ function EditorPanel({
     };
 
     return (
-        <div>
+        <div style={{height: "calc(100vh - 60px)"}}>
             <button
                 className="w-100 p-1 pb-2 btn btn-primary rounded-0"
                 onClick={() => setSelectedItem({type:"page"})}
