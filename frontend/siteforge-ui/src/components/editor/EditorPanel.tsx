@@ -61,6 +61,38 @@ function EditorPanel({
         setShowCreateRowForm(false);
     };
 
+    /* ============== Component Creation ================= */
+    const handleAddTextComponent = () => {
+        if (selectedItem?.type !== "column") return;
+
+        setRowList(prev =>
+            prev.map(row => {
+                if (row.id !== selectedItem.rowId) return row;
+
+                return {
+                    ...row,
+                    columns: row.columns.map(col => {
+                        if (col.id !== selectedItem.columnId) return col;
+
+                        return {
+                            ...col,
+                            components: [
+                                ...col.components,
+                                {
+                                    id: Date.now(),
+                                    type: "text",
+                                    props: {
+                                        text: "New Text"
+                                    }
+                                }
+                            ]
+                        };
+                    })
+                };
+            })
+        );
+    };
+
     return (
         <div style={{height: "calc(100vh - 60px)"}}>
             <button
@@ -186,6 +218,9 @@ function EditorPanel({
                     <h4>Column Properties</h4>
                     <p>Row ID: {selectedItem.rowId}</p>
                     <p>Column ID: {selectedItem.columnId}</p>
+                    <button onClick={handleAddTextComponent}>
+                        Add Text Component
+                    </button>
                 </div>
             )}
 

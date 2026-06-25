@@ -59,7 +59,17 @@ function RowView({ row, setSelectedItem, selectedItem }: Props) {
                     ) : (
                         /* Future: Render components here */
                         <div>
-                            Components will render here.
+                            {column.components.map(component => {
+                                if (component.type === "text") {
+                                    return (
+                                        <div key={component.id}>
+                                            {String((component.props as { text?: string })?.text ?? "")}
+                                        </div>
+                                    );
+                                }
+
+                                return null;
+                            })}
                         </div>
                     )}
                 </div>
