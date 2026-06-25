@@ -58,6 +58,7 @@ function EditorPage() {
                                 key={row.id}
                                 row={row}
                                 setSelectedItem={setSelectedItem}
+                                selectedItem={selectedItem}
                             />
                         ))}
                     </div>
