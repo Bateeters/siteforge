@@ -62,7 +62,18 @@ function RowView({ row, setSelectedItem, selectedItem }: Props) {
                             {column.components.map(component => {
                                 if (component.type === "text") {
                                     return (
-                                        <div key={component.id}>
+                                        <div
+                                            key={component.id}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedItem({
+                                                    type: "component",
+                                                    rowId: row.id,
+                                                    columnId: column.id,
+                                                    componentId: component.id
+                                                });
+                                            }}
+                                        >
                                             {String((component.props as { text?: string })?.text ?? "")}
                                         </div>
                                     );

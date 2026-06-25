@@ -1,5 +1,9 @@
-export type Component = {
+export type Component = TextComponent;
+
+export type TextComponent = {
     id: number;
-    type: string;
-    props: Record<string, unknown>;
+    type: "text",
+    props: {
+        text: string;
+    };
 };

@@ -61,7 +61,25 @@ function EditorPanel({
         setShowCreateRowForm(false);
     };
 
-    /* ============== Component Creation ================= */
+    // Find the component in state
+    function findComponent(
+        rowList: Row[], 
+        selectedItem: SelectedItem
+    ) {
+        if (!selectedItem || selectedItem.type !== "component") return null;
+
+        const row = rowList.find(r => r.id === selectedItem.rowId);
+        const column = row?.columns.find(c => c.id === selectedItem.columnId);
+        const component = column?.components.find(
+            comp => comp.id === selectedItem.componentId
+        );
+
+        return component ?? null;
+    }
+
+    // ==============================
+    // COMPONENT CREATION
+    // ==============================
     const handleAddTextComponent = () => {
         if (selectedItem?.type !== "column") return;
 
@@ -93,6 +111,54 @@ function EditorPanel({
         );
     };
 
+    // Sync Selected Component with Local State
+    const textValue = selectedItem?.type === "component"
+        ? (() => {
+            const component = findComponent(rowList, selectedItem);
+            return component?.props?.text ?? "";
+        })()
+        : "";
+
+
+    // ==============================
+    // COMPONENT UPDATING
+    // ==============================
+    const updateTextComponent = (value: string) => {
+        if (selectedItem?.type !== "component") return;
+
+        setRowList(prev =>
+            prev.map(row => {
+                if (row.id !== selectedItem.rowId) return row;
+
+                return{
+                    ...row,
+                    columns: row.columns.map(col => {
+                        if (col.id !== selectedItem.columnId) return col;
+
+                        return {
+                            ...col,
+                            components: col.components.map(comp => {
+                                if (comp.id !== selectedItem.componentId) return comp;
+
+                                return {
+                                    ...comp,
+                                    props: {
+                                        ...comp.props,
+                                        text: value
+                                    }
+                                };
+                            })
+                        };
+                    })
+                };
+            })
+        );
+    };
+
+
+    // =======================================
+    // PANEL RENDERING
+    // =======================================
     return (
         <div style={{height: "calc(100vh - 60px)"}}>
             <button
@@ -231,6 +297,12 @@ function EditorPanel({
                     <p>Row ID: {selectedItem.rowId}</p>
                     <p>Column ID: {selectedItem.columnId}</p>
                     <p>Component ID: {selectedItem.componentId}</p>
+                    <textarea
+                        cols={50}
+                        rows={4}
+                        value={textValue}
+                        onChange={(e) => updateTextComponent(e.target.value)}
+                    />
                 </div>
             )}
         </div>
