@@ -48,6 +48,11 @@ Examples include:
 
 Pages are stored in the `/pages` directory.
 
+### Columns
+
+Columns own an ordered list of components ( components: Component[] ) rather than a single component.
+This mirrors the layout model of modern website builders and avoids a future refactor when supporting vertically stacked content.
+
 ### Components
 
 Reusable UI elements are stored in the `/components` directory.
