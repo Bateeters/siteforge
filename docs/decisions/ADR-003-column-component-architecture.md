@@ -26,7 +26,12 @@ Row:
 
 Column:
 - id: number
-- component: optional placeholder (initially null)
+- component: Component[]
+
+Component:
+- id: number
+- type: string
+- props: Record<string, unknown>
 
 ## Consequences
 
