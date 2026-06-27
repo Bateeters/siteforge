@@ -1,4 +1,6 @@
-export type Component = TextComponent;
+export type Component = 
+    TextComponent | 
+    HeaderComponent;
 
 export type TextComponent = {
     id: number;
@@ -7,3 +9,12 @@ export type TextComponent = {
         text: string;
     };
 };
+
+export type HeaderComponent = {
+    id: number;
+    type: "header",
+    props: {
+        text: string;
+        level: number;
+    }
+}
