@@ -1,6 +1,8 @@
 import { useState } from "react";
 import type { SelectedItem } from "../../types/selected";
 import type { Row } from "../../types/row";
+import type { Component } from "../../types/component";
+import { componentEditors } from "../../editorRegistry";
 
 type EditorPanelProps = {
     selectedItem: SelectedItem;
@@ -111,26 +113,46 @@ function EditorPanel({
         );
     };
 
-    // Sync Selected Component with Local State
-    const textValue = selectedItem?.type === "component"
-        ? (() => {
-            const component = findComponent(rowList, selectedItem);
-            return component?.props?.text ?? "";
-        })()
-        : "";
+    const handleAddHeaderComponent = () => {
+        if (selectedItem?.type !== "column") return;
 
+        setRowList(prev =>
+            prev.map(row => {
+                if (row.id !== selectedItem.rowId) return row;
 
-    // ==============================
-    // COMPONENT UPDATING
-    // ==============================
-    const updateTextComponent = (value: string) => {
+                return {
+                    ...row,
+                    columns: row.columns.map(col => {
+                        if (col.id !== selectedItem.columnId) return col;
+
+                        return {
+                            ...col,
+                            components: [
+                                ...col.components,
+                                {
+                                    id: Date.now(),
+                                    type: "header",
+                                    props: {
+                                        text: "New Header",
+                                        level: 1
+                                    }
+                                }
+                            ]
+                        };
+                    })
+                };
+            })
+        );
+    };
+
+    const updateComponent = (newProps: Record<string, unknown>) => {
         if (selectedItem?.type !== "component") return;
 
         setRowList(prev =>
             prev.map(row => {
                 if (row.id !== selectedItem.rowId) return row;
 
-                return{
+                return {
                     ...row,
                     columns: row.columns.map(col => {
                         if (col.id !== selectedItem.columnId) return col;
@@ -142,17 +164,26 @@ function EditorPanel({
 
                                 return {
                                     ...comp,
-                                    props: {
-                                        ...comp.props,
-                                        text: value
-                                    }
-                                };
+                                    props: { ...comp.props, ...newProps}
+                                } as Component;
                             })
                         };
                     })
                 };
             })
         );
+        
+
+    };
+
+    const renderComponentEditor = () => {
+        const component = findComponent(rowList, selectedItem);
+        if (!component) return null;
+
+        const renderEditor = componentEditors[component.type];
+        if (!renderEditor) return null;
+
+        return renderEditor({ component, updateProps: updateComponent });
     };
 
 
@@ -287,6 +318,9 @@ function EditorPanel({
                     <button onClick={handleAddTextComponent}>
                         Add Text Component
                     </button>
+                    <button onClick={handleAddHeaderComponent}>
+                        Add Header Text Component
+                    </button>
                 </div>
             )}
 
@@ -294,15 +328,7 @@ function EditorPanel({
             {selectedItem?.type === "component" && (
                 <div className="p-3">
                     <h4>Component Properties</h4>
-                    <p>Row ID: {selectedItem.rowId}</p>
-                    <p>Column ID: {selectedItem.columnId}</p>
-                    <p>Component ID: {selectedItem.componentId}</p>
-                    <textarea
-                        cols={50}
-                        rows={4}
-                        value={textValue}
-                        onChange={(e) => updateTextComponent(e.target.value)}
-                    />
+                    {renderComponentEditor()}
                 </div>
             )}
         </div>
