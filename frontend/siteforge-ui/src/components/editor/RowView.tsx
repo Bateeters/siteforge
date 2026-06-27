@@ -1,5 +1,6 @@
 import type { Row } from "../../types/row";
 import type { SelectedItem } from "../../types/selected";
+import { componentRenderers } from "../../componentRegistry";
 
 type Props = {
     row: Row;
@@ -57,29 +58,29 @@ function RowView({ row, setSelectedItem, selectedItem }: Props) {
                             +
                         </button>
                     ) : (
-                        /* Future: Render components here */
                         <div>
                             {column.components.map(component => {
-                                if (component.type === "text") {
-                                    return (
-                                        <div
-                                            key={component.id}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setSelectedItem({
-                                                    type: "component",
-                                                    rowId: row.id,
-                                                    columnId: column.id,
-                                                    componentId: component.id
-                                                });
-                                            }}
-                                        >
-                                            {String((component.props as { text?: string })?.text ?? "")}
-                                        </div>
-                                    );
-                                }
+                                const render = componentRenderers[component.type];
+                                if (!render) return null;
 
-                                return null;
+                                return (
+                                    <div
+                                        key={component.id}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSelectedItem({
+                                                type: "component",
+                                                rowId: row.id,
+                                                columnId: column.id,
+                                                componentId: component.id
+                                            });
+                                        }}
+                                    >
+                                        {render(component)}
+                                    </div>
+                                )
+
+                                return null; // remove this line when you complete steps 3a–3c
                             })}
                         </div>
                     )}
